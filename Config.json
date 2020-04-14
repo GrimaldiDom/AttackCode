@@ -1,0 +1,24 @@
+{
+"coils" : {
+	"Pump":0,
+	"Valve":1,
+	"Pump Manual Mode":792,
+	"Pump Auto Mode":793,
+	"Alarm":5
+},
+"discreteInputs":{
+	},
+"holdingRegisters":{
+	"Min Setpoint":1,
+	"Max Setpoint":2,
+	"Mode Register":3,
+	"Pump Register":4,
+	"Valve Register":5,
+	"Filtered Level":6
+},
+"inputRegisters":{
+	"level":0
+	},
+"set_interval_period":2,
+"Network_Interface":"VMware Network Adapter VMnet1"
+}
