@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+#!/bin/python3
+
 """
 Created on Tue Mar 10 15:43:48 2020
 
@@ -13,6 +14,24 @@ being performed on the system.
 import socket
 import threading
 import pickle
+import time
+from pymodbus.client.sync import ModbusTcpClient
+
+MODBUS_PKT_SIZE=55
+REG_DICT={
+    "Flow":         {"offset": 0,    "type": "holding"  },
+    "ColdTempIn":   {"offset": 1,    "type": "input"    },
+    "ColdTempOut":  {"offset": 4,    "type": "input"    },
+    "HotMassFlowIn":{"offset": 3,    "type": "input"    },
+    "HotTempIn":    {"offset": 2,    "type": "input"    },
+    "Setpoint":     {"offset": 1,    "type": "holding"  },
+    "ShellPress":   {"offset": 6,    "type": "input"    },
+    "Temperature":  {"offset": 0,    "type": "input"    },
+    "TubePress":    {"offset": 5,    "type": "input"    },
+    "PID_kp":       {"offset": 2048, "type": "holding"  },
+    "PID_td":       {"offset": 2052, "type": "holding"  },
+    "PID_tr":       {"offset": 2050, "type": "holding"  },
+}
 
 class attack:
 
@@ -22,19 +41,32 @@ class attack:
             If we are attacking a PLC, the IP and Port of the PLC
             should be used while amking an object to this class
         """
-        self.IP=IP
-        self.Port=Port
+        self.ip=IP
+        self.port=Port
+        # Modbus tcp client
+        self.modcli = ModbusTcpClient(IP)
 
+    @staticmethod
+    def getReg( reg, index=0 ):
+        # Registers are stored without decimal points. Their values represent
+        # the number multiplied by 100 so we undo that to get the real value
 
-    def change_data_label(self,label,IP,Port):
-        """
-            calling this function changes the data label
-        """
-        client_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        address = (self.IP,int(self.Port) )
-        client_sock.connect(address)
-        dat = pickle.dumps("Change|"+str(label))
-        client_sock.send(dat)
+        # We assume desired register is first element, pass in optional index to change
+        return( float( reg[index] ) / 100 )
+
+    def PrintRegisters( self ):
+        print("Printing registers...")
+        for key in REG_DICT.keys():
+            t = REG_DICT[key]["type"]    # Current register type
+            o = REG_DICT[key]["offset"]  # Current register offset
+            if( t == "input" ):
+                data = self.modcli.read_input_registers(o,1,unit=1)
+            elif( t == "holding" ):
+                data = self.modcli.read_holding_registers(o,1,unit=1)
+            else:
+                raise Exception("Unknown register type...")
+
+            print( "Register [{}]: {}".format( key, self.getReg(data.registers) ) )
 
     def attack_1(self,label):
         """
@@ -85,16 +117,6 @@ class attack:
         print("Performing Normal Operation 2 ")
 
 
-#----------------------------------------------------
-#        Example Call
-# attacker=attack(PLCIP,PLCport)
-# attacker.change_data_label("CommandInjection",IPaddress of the logger1,4321)
-# attacker.change_data_label("CommandInjection",IPaddress of the logger2,4321)
-# attacker.attack_1("CommandInjection")
-
-
-
-
-# attacker.change_data_label("ResponseInjection",IPaddress of the logger1,4321)
-# attacker.change_data_label("ResponseInjection",IPaddress of the logger2,4321)
-# attacker.attack_2("ResponseInjection")
+if __name__=="__main__":
+    attacker = attack( "192.168.56.104", "502" )
+    attacker.PrintRegisters()
