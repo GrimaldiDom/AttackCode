@@ -54,11 +54,16 @@ class attack:
         # We assume desired register is first element, pass in optional index to change
         return( float( reg[index] ) / 100 )
 
-    def PrintRegisters( self ):
+    def PrintAllRegisters( self ):
         print("Printing registers...")
         for key in REG_DICT.keys():
-            t = REG_DICT[key]["type"]    # Current register type
-            o = REG_DICT[key]["offset"]  # Current register offset
+            data = self.ReadRegister( key )
+
+            print( "Register [{}]: {}".format( key, data ) )
+
+    def ReadRegister( self, name ):
+            t = REG_DICT[name]["type"]    # Current register type
+            o = REG_DICT[name]["offset"]  # Current register offset
             if( t == "input" ):
                 data = self.modcli.read_input_registers(o,1,unit=1)
             elif( t == "holding" ):
@@ -66,9 +71,10 @@ class attack:
             else:
                 raise Exception("Unknown register type...")
 
-            print( "Register [{}]: {}".format( key, self.getReg(data.registers) ) )
+            return( self.getReg( data.registers ) )
 
-    def attack_1(self,label):
+
+    def attack_1(self):
         """
             The label can be either an integer or an categorical value.
             Be consistent with the data type you choose
@@ -119,4 +125,4 @@ class attack:
 
 if __name__=="__main__":
     attacker = attack( "192.168.56.104", "502" )
-    attacker.PrintRegisters()
+    attacker.PrintAllRegisters()
