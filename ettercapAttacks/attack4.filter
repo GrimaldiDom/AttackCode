@@ -1,0 +1,29 @@
+# pretty rough and I know there has got to be a better way, but it's an example
+if (ip.proto == TCP && tcp.src == 502) {
+	msg("Found IP packet from port 502: from the PLC");
+	if(DATA.data + 5 == 0x11) {
+		DATA.data + 0 = 0x11;
+		DATA.data + 1 = 0x11;
+		DATA.data + 2 = 0x11;
+		DATA.data + 3 = 0x11;
+		DATA.data + 4 = 0x11;
+		DATA.data + 5 = 0x11;
+		DATA.data + 6 = 0x11;
+		DATA.data + 7 = 0x11;
+		DATA.data + 8 = 0x11;
+		DATA.data + 9 = 0x11;
+		DATA.data + 10 = 0x11;
+		DATA.data + 11 = 0x11;
+		DATA.data + 12 = 0x11;
+		DATA.data + 13 = 0x11;
+		DATA.data + 14 = 0x11;
+		DATA.data + 15 = 0x11;
+		DATA.data + 16 = 0x11;
+		DATA.data + 17 = 0x11;
+		DATA.data + 18 = 0x11;
+		DATA.data + 19 = 0x11;
+		DATA.data + 20 = 0x11;
+		DATA.data + 21 = 0x11;
+		DATA.data + 22 = 0x11;
+	}
+}
