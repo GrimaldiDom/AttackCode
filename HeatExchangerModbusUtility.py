@@ -67,7 +67,7 @@ class ModbusUtility():
             # Sending these backwards is a concious decision. Unpack always returns
             # them in 'backwards' order.
             self.modcli.write_registers( o, data[1] )
-            self.modcli.write_registers( o+2, data[0] )
+            self.modcli.write_registers( o+1, data[0] )
         else:
             data = num
             self.modcli.write_registers( o, self.setReg( data ) )
