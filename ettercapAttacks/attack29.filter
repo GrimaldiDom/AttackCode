@@ -1,0 +1,6 @@
+if (ip.proto == TCP && tcp.src == 502) {
+	msg("Found IP packet from port 502: from the PLC");
+	if(ip.src == '192.168.56.1') {
+		drop();
+	}
+}

