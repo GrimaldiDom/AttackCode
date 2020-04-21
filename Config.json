@@ -1,24 +1,24 @@
 {
 "coils" : {
-	"Pump":0,
-	"Valve":1,
-	"Pump Manual Mode":792,
-	"Pump Auto Mode":793,
-	"Alarm":5
 },
 "discreteInputs":{
 	},
 "holdingRegisters":{
-	"Min Setpoint":1,
-	"Max Setpoint":2,
-	"Mode Register":3,
-	"Pump Register":4,
-	"Valve Register":5,
-	"Filtered Level":6
+	"Flow":0,
+	"Setpoint":1,
+	"PID_kp":2048,
+	"PID_tr":2050,
+	"PID_td":2052
 },
 "inputRegisters":{
-	"level":0
+	"Temperature":0,
+	"Cold_Temp_In":1,
+	"Hot_Temp_In":2,
+	"Hot_Mass_Flow_In":3,
+	"Cold_Temp_Out":4,
+	"Tube_Press":5,
+	"Shell_Press":6
 	},
 "set_interval_period":2,
-"Network_Interface":"VMware Network Adapter VMnet1"
+"Network_Interface":"eth0"
 }
