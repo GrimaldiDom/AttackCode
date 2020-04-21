@@ -27,6 +27,11 @@ class attack:
         self.ThreadDict = {}
 
         self.AttackDict = {
+            13: self.Attack13
+            14: self.Attack14
+            15: self.Attack15
+            16: self.Attack16
+            #17 is not needed as it is just a variant of 13-16.
             18: self.Attack18,
             19: self.Attack19,
             20: self.Attack20,
@@ -71,7 +76,29 @@ class attack:
         # size after deleting elements. For loop no likey and thows errors
         for AttackNumber in list( self.ThreadDict.keys() ):
             self.StopAttack( AttackNumber )
-
+            
+    def Attack13( self ):
+        # #13 - Increase Hot_Temp_Out Slowly
+        current = self.he.ReadRegister( "Temperature" )
+        self.he.WriteRegister( "Temperature", current + 1 ); #Slow increase of the temperature.  Keep this attack active to build up over time.
+        
+    def Attack14 ( self ):
+        # #14 - Decrease Hot_Temp_Out Slowly
+        current = self.he.ReadRegister( "Temperature" )
+        self.he.WriteRegister( "Temperature", current - 1 ); #Slow decrease of the temperature.  Keep this attack active to build up over time.
+        
+    def Attack15 ( self ):
+        # #15 - Increase Hot_Temp_Out Rapidly
+        current = self.he.ReadRegister( "Temperature" )
+        self.he.WriteRegister( "Temperature", current + 10 ); #Rapid increase of the temperature.  Keep this attack active to build up over time.
+        
+    def Attack16 (self ):
+        # #16 - Decrease Hot_Temp_Out Rapidly
+        current = self.he.ReadRegister( "Temperature" )
+        self.he.WriteRegister( "Temperature", current -10 ); #Rapid decrease of the temperature.  Keep this attack active to build up over time.
+        
+        
+        
     def Attack18( self ):
         # #18 -- Set the value of setpoint below 20C
         self.he.WriteRegister( "Setpoint", 10 )
